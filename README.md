@@ -1,0 +1,2 @@
+# kubehard
+kubernetes hard way
