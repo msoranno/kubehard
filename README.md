@@ -7,10 +7,98 @@ Configuration of kubernetes at home using the hard way by [**Kelsey Hightower**]
 
 ## Planning
 
-- OS's. 
-    - Ubuntu for Master
-    - 
-- Balancer (HAProxy)
+### Control plane 1
+- ubuntu 16
+- .39
+- salt master
+### Control plane 2
+- centos 7
+- .50
+
+### worker1
+### loadbalancer
+
+
+## Housekeeping
+### install virtualbox on redhat
+```bash
+# Add repo and update
+cd /etc/yum.repos.d/
+wget http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
+yum udate -y
+yum update -y
+
+# check kernel version, if not matches the reboot.
+uname -r
+rpm -qa kernel |sort -V |tail -n 1
+
+# install
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install VirtualBox-5.2
+
+#configure
+/usr/lib/virtualbox/vboxdrv.sh setup
+usermod -a -G vboxusers sp81891
+
+# optional
+vboxconfig 
+
+```
+
+
+### install salt on control plane 1
+
+
+### Centos7 static ip
+```bash
+# find your interface
+msoranno@node01 ~]$ ip ad
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 00:15:5d:01:22:04 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.48/24 brd 192.168.1.255 scope global noprefixroute dynamic eth0
+       valid_lft 41453sec preferred_lft 41453sec
+    inet6 fe80::e7d0:b97a:78c5:cfd3/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+
+[msoranno@node01 ~]$ cd /etc/sysconfig/network-scripts/
+[msoranno@node01 network-scripts]$ sudo cp ifcfg-eth0 ifcfg-eth0.backup 
+[msoranno@node01 network-scripts]$ sudo vi ifcfg-eth0
+
+
+TYPE="Ethernet"
+PROXY_METHOD="none"
+BROWSER_ONLY="no"
+#BOOTPROTO="dhcp"
+BOOTPROTO="static"
+DEFROUTE="yes"
+IPV4_FAILURE_FATAL="no"
+IPV6INIT="yes"
+IPV6_AUTOCONF="yes"
+IPV6_DEFROUTE="yes"
+IPV6_FAILURE_FATAL="no"
+IPV6_ADDR_GEN_MODE="stable-privacy"
+NAME="eth0"
+UUID="37876cd5-8df9-4a3f-a3be-157e6c1bb879"
+DEVICE="eth0"
+ONBOOT="yes"
+IPADDR=192.168.1.50
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+DNS1=80.58.61.254
+DNS2=80.58.61.250
+
+
+[msoranno@node01 network-scripts]$ sudo systemctl restart network
+
+```
+
+
  
 ## Concepts
 
