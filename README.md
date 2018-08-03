@@ -20,7 +20,95 @@ Configuration of kubernetes at home using the hard way by [**Kelsey Hightower**]
 
 
 ## Housekeeping
-### install virtualbox on redhat
+
+### install salt 
+```bash
+# salt master ubuntu18
+
+sudo hostnamectl set-hostname salt
+
+sudo vi /etc/hosts
+127.0.0.1 localhost salt
+
+wget -O - https://repo.saltstack.com/apt/debian/9/amd64/archive/2018.3.0/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
+
+sudo vi /etc/apt/sources.list.d/saltstack.list
+deb http://repo.saltstack.com/apt/debian/9/amd64/archive/2018.3.0 stretch main
+
+sudo apt-get update -y
+sudo apt-get install salt-master salt-minion
+
+curl -L https://bootstrap.saltstack.com -o install_salt.sh
+sudo sh install_salt.sh -P -M
+
+# salt minion (ubuntu18)
+sudo hostnamectl set-hostname master01.k8s.com
+sudo vi /etc/hosts
+127.0.0.1       localhost master01.k8s.com
+192.168.1.60    salt
+
+curl -L https://bootstrap.saltstack.com -o install_salt.sh
+sudo sh install_salt.sh -P
+
+
+# salt minion (Centos7)
+sudo hostnamectl set-hostname master02.k8s.com
+sudo vi /etc/hosts
+127.0.0.1       localhost master02.k8s.com
+192.168.1.60    salt
+
+curl -L https://bootstrap.saltstack.com -o install_salt.sh
+sudo sh install_salt.sh -P
+
+
+# Again on salt master ubuntu18
+
+    # - Verifying unnacepted keys keys (salt master). 
+
+msoranno@salt:~$ sudo salt-key -L
+Accepted Keys:
+Denied Keys:
+Unaccepted Keys:
+master01.k8s.com
+master02.k8s.com
+salt
+Rejected Keys:
+
+    # - Listing keys
+msoranno@salt:~$ sudo salt-key -F master
+Local Keys:
+master.pem:  2f:e0:24:1b:ad:1f:c9:81:68:c6:29:72:e4:41:02:5f:e4:d3:38:4e:14:85:13:8c:b9:d9:a4:42:7c:fe:10:b4
+master.pub:  45:4c:b2:e4:ea:82:00:b2:0b:05:38:7f:46:7d:0b:3d:ec:cb:6b:79:4c:02:6a:6d:20:de:ad:b9:45:7c:73:d9
+Unaccepted Keys:
+master01.k8s.com:  bf:b2:74:8b:19:a9:15:53:3e:64:46:48:8e:33:9c:45:7b:8e:2e:c0:01:14:86:1a:f6:c0:b4:d5:dc:2d:7c:55
+master02.k8s.com:  18:55:42:78:dc:eb:30:ef:3e:8d:be:4a:75:39:f4:d4:e7:0b:c8:95:18:95:42:62:8c:b4:e4:90:7c:8c:78:6b
+salt:  04:5a:55:2f:eb:57:61:66:80:4d:f1:1d:04:de:99:a7:f3:b3:df:dc:43:09:87:c5:18:f3:ca:fa:df:28:36:57
+
+
+# On every minion. Update the master_finger value with the master.pub returned before.
+sudo vi /etc/salt/minion
+
+    # Once updated restart
+sudo systemctl restart salt-minion
+
+
+# Now back on master we can accepts keys
+
+msoranno@salt:~$ sudo salt-key -A
+
+The following keys are going to be accepted:
+Unaccepted Keys:
+master01.k8s.com
+master02.k8s.com
+salt
+Proceed? [n/Y] y
+Key for minion master01.k8s.com accepted.
+Key for minion master02.k8s.com accepted.
+Key for minion salt accepted.
+
+```
+
+### install virtualbox on redhat7
 ```bash
 # Add repo and update
 cd /etc/yum.repos.d/
@@ -32,7 +120,7 @@ yum update -y
 uname -r
 rpm -qa kernel |sort -V |tail -n 1
 
-# install
+# installmsoranno
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install VirtualBox-5.2
 
@@ -40,15 +128,36 @@ yum install VirtualBox-5.2
 /usr/lib/virtualbox/vboxdrv.sh setup
 usermod -a -G vboxusers sp81891
 
-# optional
+# troubleshooting
+#------
+# - error starting vm
+# The VirtualBox Linux kernel driver (vboxdrv) is either not loaded or there is a permission problem with /dev/vboxdrv. Please reinstall the kernel module by executing
+#------
+yum install kernel-devel-$(uname -r)
 vboxconfig 
 
 ```
 
+### Ubuntu18 static ip
+```bash
+root@salt:~# cd /etc/netplan/
+root@salt:/etc/netplan# vi 50-cloud-init.yaml
 
-### install salt on control plane 1
+network:
+ version: 2
+ renderer: networkd
+ ethernets:
+   enp0s3:
+     dhcp4: no
+     dhcp6: no
+     addresses: [192.168.1.60/24]
+     gateway4: 192.168.1.1
+     nameservers:
+       addresses: [80.58.61.254,80.58.61.250]
+       
+root@salt:/etc/netplan# netplan apply
 
-
+```
 ### Centos7 static ip
 ```bash
 # find your interface
