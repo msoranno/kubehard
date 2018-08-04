@@ -107,7 +107,31 @@ Key for minion master02.k8s.com accepted.
 Key for minion salt accepted.
 
 ```
+### configuring salt
 
+```bash
+# AT SALT-MASTER We make our /home/msoranno/salt directory as root to salt
+mkdir salt
+cd /etc/salt/master.d
+sudo vi file-roots.conf
+file_roots:
+  base:
+    - /home/msoranno/salt
+    
+sudo systemctl restart salt-master
+
+# AT MINION we create roles for them.
+cd /etc/salt/minion.d/
+sudo vi grains.conf
+grains:
+  roles:
+    - kubeMaster
+
+sudo systemctl restart salt-minion
+
+```
+
+ 
 ### install virtualbox on redhat7
 ```bash
 # Add repo and update
@@ -246,6 +270,36 @@ Addons are pods and services that implement cluster features. The pods may be ma
 
 > Required addon
 > - DNS: all Kubernetes clusters should have cluster DNS, as many examples rely on it. Cluster DNS is a DNS server, in addition to the other DNS server(s) in your environment, which serves DNS records for Kubernetes services. Containers started by Kubernetes automatically include this DNS server in their DNS searches.
+
+
+## Double checks on Environment start
+
+- salt master
+```bash
+sysctl -w net.ipv4.ip_forward=0
+```
+- kube master01 (alien)
+```bash
+sudo systemctl start systemd-udevd
+```
+
+
+## Troubleshooting
+
+### Duplicate PING
+```bash
+64 bytes from 192.168.1.60: icmp_seq=57 ttl=64 time=159 ms
+64 bytes from 192.168.1.60: icmp_seq=57 ttl=64 time=159 ms (DUP!)
+```
+Salt-master ia a vm running on virtualbox on my lenovo redhat7 as host. 
+Sometimes salt-minions failed on connecting to salt-master and we figure out that the problem was the salt master was responding duplicates ping packages.
+The problem must be related with a bug on virtualbox.
+
+> Solution: we have to disable ip_forwarding on the redhat host.
+```bash
+# This will turn back to 1 on restart.
+sysctl -w net.ipv4.ip_forward=0
+```
 
 
 
