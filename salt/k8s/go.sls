@@ -2,4 +2,4 @@ neededs:
   pkg.installed:
     - pkgs:
       - git
-      - docker
+      - docker-ce
