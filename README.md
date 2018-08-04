@@ -116,7 +116,7 @@ cd /etc/salt/master.d
 sudo vi file-roots.conf
 file_roots:
   base:
-    - /home/msoranno/salt
+    - /home/msoranno/kubehard/salt
     
 sudo systemctl restart salt-master
 
