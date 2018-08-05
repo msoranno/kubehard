@@ -1,10 +1,9 @@
 dockerneeds:
   pkg.installed:
-    - pkgs:
   {% if grains['os'] == 'CentOS' %}
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - software-properties-common
+      - name: apt-transport-https
+      - name: ca-certificates
+      - name: curl
+      - name: software-properties-common
   {% endif %}
 
