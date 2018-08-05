@@ -18,7 +18,8 @@ dockerneeds:
 docker-ce:
   pkg.latest: []
   require:
-    - dockerneeds
+    - pkgrepo: dockerneeds
+    - pkg: dockerneeds
   service.running:
     - name: docker
     - enable: True
