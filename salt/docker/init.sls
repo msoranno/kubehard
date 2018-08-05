@@ -1,6 +1,6 @@
 dockerneeds:
   pkg.installed:
-  {%- if grains['os'] == 'CentOS'%}
+  {%- if grains['os'] == 'CentOS' %}
     - pkgs:
       - apt-transport-https
       - ca-certificates
