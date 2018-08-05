@@ -1,5 +1,5 @@
 base:
   '*':
     - htop
-  'kubeMaster':
+  'master*':
     - vim
