@@ -1,5 +1,6 @@
 
-{% if grains['os'] == 'CentOS' %}
+{% if grains['os'] == 'Ubuntu' %}
+{% set os_distro = salt['cmd.shell']('lsb_release -cs') %}
 dockerneeds:
   pkg.installed:
     - pkgs:
@@ -9,8 +10,7 @@ dockerneeds:
       - software-properties-common
   pkgrepo.managed:
     - humanname: Docker
-    # El 'Core' lo hemos determinado con "lsb_release -cs"
-    - name: deb [arch=amd64] https://download.docker.com/linux/ubuntu Core stable
+    - name: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ os_distro }} stable
     - file: /etc/apt/sources.list.d/docker.list
     - gpgcheck: 1
     - key_url: https://download.docker.com/linux/ubuntu/gpg
