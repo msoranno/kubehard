@@ -7,7 +7,7 @@
 
 
 {% set repo = {
-    'CentOS': '"Not Defined"',
+    'CentOS': 'https://download.docker.com/linux/centos/docker-ce.repo',
     'Ubuntu': 'deb [arch=amd64] https://download.docker.com/linux/ubuntu',
     }.get(grains.os) %}
 
@@ -39,3 +39,28 @@ docker-ce:
     - restart: True
 {% endif %}
 
+
+
+{% if grains['os'] == 'CentOS' %}
+dockerneeds:
+  pkg.installed:
+    - pkgs:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - curl
+
+yum-config-manager --add-repo {{ repo }}:
+  cmd.run:
+  require:
+    - pkg: dockerneeds
+
+docker-ce:
+  pkg.latest: []
+  require:
+    - pkg: dockerneeds
+  service.running:
+    - name: docker
+    - enable: True
+    - restart: True
+{% endif %}

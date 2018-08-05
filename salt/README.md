@@ -17,3 +17,8 @@ sudo salt 'salt' sys.list_functions pkg
 ```bash
 sudo salt '*' grains.item os
 ```
+
+## Runing state using highstate
+```bash
+sudo salt 'master*' state.highstate test=true
+```
