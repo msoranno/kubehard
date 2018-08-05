@@ -8,7 +8,7 @@
 
 {% set repo = {
     'CentOS': '"Not Defined"',
-    'Ubuntu': '"deb [arch=amd64] https://download.docker.com/linux/ubuntu"',
+    'Ubuntu': 'deb [arch=amd64] https://download.docker.com/linux/ubuntu',
     }.get(grains.os) %}
 
 
@@ -23,7 +23,7 @@ dockerneeds:
       - software-properties-common
   pkgrepo.managed:
     - humanname: Docker
-    - name: {{ repo }} {{ os_distro }} stable
+    - name: "{{ repo }} {{ os_distro }} stable"
     - file: /etc/apt/sources.list.d/docker.list
     - gpgcheck: 1
     - key_url: {{ gpg }}
