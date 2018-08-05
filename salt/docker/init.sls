@@ -1,3 +1,5 @@
+# docker CE for ubuntu18 and centos7.5
+
 {% set gpg = {
     'CentOS': 'not defined',
     'Ubuntu': 'https://download.docker.com/linux/ubuntu/gpg'}.get(grains.os) %}
