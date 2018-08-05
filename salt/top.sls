@@ -1,3 +1,5 @@
 base:
   '*':
     - htop
+  'kubeMaster':
+    - htop
