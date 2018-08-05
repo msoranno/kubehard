@@ -2,4 +2,4 @@ base:
   '*':
     - htop
   'master*':
-    - vim
+    - docker
