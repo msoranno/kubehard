@@ -1,6 +1,6 @@
 dockerneeds:
   pkg.installed:
-    {% if grains['os'] == 'CentOS' %}
+    {% if grains['os'] == 'Ubuntu' %}
     - name: apt-transport-https
     - name: ca-certificates
     - name: curl
