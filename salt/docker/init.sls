@@ -2,12 +2,14 @@
 
 {% set gpg = {
     'CentOS': 'not defined',
-    'Ubuntu': 'https://download.docker.com/linux/ubuntu/gpg'}.get(grains.os) %}
+    'Ubuntu': 'https://download.docker.com/linux/ubuntu/gpg',
+    }.get(grains.os) %}
 
 
 {% set repo = {
     'CentOS': '"Not Defined"',
-    'Ubuntu': '"deb [arch=amd64] https://download.docker.com/linux/ubuntu"'}.get(grains.os) %}
+    'Ubuntu': '"deb [arch=amd64] https://download.docker.com/linux/ubuntu"',
+    }.get(grains.os) %}
 
 
 {% if grains['os'] == 'Ubuntu' %}
