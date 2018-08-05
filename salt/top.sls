@@ -2,4 +2,4 @@ base:
   '*':
     - htop
   'kubeMaster':
-    - htop
+    - vim
