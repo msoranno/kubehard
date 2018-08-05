@@ -52,8 +52,8 @@ dockerneeds:
 
 yum-config-manager --add-repo {{ repo }}:
   cmd.run:
-  require:
-    - pkg: dockerneeds
+    - require:
+        - pkg: dockerneeds
 
 docker-ce:
   pkg.latest: []
